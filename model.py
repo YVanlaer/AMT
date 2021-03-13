@@ -137,7 +137,7 @@ if __name__ == '__main__':
             output.backward()
             optimizer.step()
             total_loss += output.detach()
-            total_loss = total_loss / (i + 1)
+            avg_loss = total_loss / (i + 1)
             sys.stdout.write(
                 "\rProgress = {progress}   ce_loss = {ce_loss}   avg_loss = {avg_loss}".format(
                     progress=colored("{:.3f}".format(epoch + i / len(dataLoader)), "green", attrs=['bold']),
@@ -147,5 +147,5 @@ if __name__ == '__main__':
         sys.stdout.write("\n")
         if not os.path.exists('model'):
             os.mkdir('model')
-        torch.save("model/output"+str(epoch)+".pt", {'epoch': epoch, 'state_dict': model_conv.state_dict(), 'optimizer': optimizer.state_dict()})
+        torch.save({'epoch': epoch, 'state_dict': model_conv.state_dict(), 'optimizer': optimizer.state_dict()}, "model/output"+str(epoch)+".pt")
             #loglikelihood = model_nade(output)
