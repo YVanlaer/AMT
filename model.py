@@ -144,4 +144,7 @@ if __name__ == '__main__':
                     avg_loss=colored("{:.4f}".format(avg_loss), "red", attrs=['bold'])))
             sys.stdout.flush()
         sys.stdout.write("\n")
+        if not os.path.exists('model'):
+            os.mkdir('model')
+        torch.save("model/output"+str(epoch)+".pt", {'epoch': epoch, 'state_dict': model_conv.state_dict(), 'optimizer': optimizer.state_dict()})
             #loglikelihood = model_nade(output)
