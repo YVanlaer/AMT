@@ -8,7 +8,7 @@ from torch import optim
 from termcolor import colored
 import sys
 
-from preprocess import MAPSDataLoader
+from dataloader import MAPSDataLoader
 
 class ConvNet(nn.Module):
     def __init__(self, window_size, output_size):
