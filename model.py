@@ -133,8 +133,8 @@ if __name__ == '__main__':
     optimizer = optim.SGD(model_conv.parameters(), lr=lr, momentum=0.9)
 
     if os.path.exists('model') and len(os.listdir('model')) > 0:
-        state = torch.load(os.listdir('model')[-1])
-        model.load_state_dict(state['state_dict'])
+        state = torch.load('model/' + sorted(os.listdir('model'))[-1])
+        model_conv.load_state_dict(state['state_dict'])
         optimizer.load_state_dict(state['optimizer'])
         start_epoch = state['epoch'] + 1
 
