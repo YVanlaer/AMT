@@ -114,6 +114,13 @@ class RNN_Nade_Cell(nn.Module):
 
         return self.tanh(output)
 
+def step_decay(lr, optimizer):
+    # compute the new learning rate based on decay rate
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+
+    return optimizer
+
 if __name__ == '__main__':
     model_conv = ConvNet(window_size=7, output_size=88)
     model_nade = RNN_Nade(input_size=88, hidden_size_rnn=200, hidden_size_nade=150)
@@ -122,14 +129,21 @@ if __name__ == '__main__':
     loss = nn.BCELoss()
     lr = 0.01
     start_epoch = 0
-    end_epoch = 10
+    end_epoch = 20
     optimizer = optim.SGD(model_conv.parameters(), lr=lr, momentum=0.9)
+
+    if os.path.exists('model') and len(os.listdir('model')) > 0:
+        state = torch.load(os.listdir('model')[-1])
+        model.load_state_dict(state['state_dict'])
+        optimizer.load_state_dict(state['optimizer'])
+        start_epoch = state['epoch'] + 1
 
     for epoch in range(start_epoch, end_epoch):
         print('>>>>>> epoch {epoch} <<<<<<'.format(epoch=colored("{}".format(epoch), "green", attrs=["bold"])))
         model_conv.train()
         total_loss = 0
         avg_loss = 0
+        optimizer = step_decay(lr - epoch * lr / 1000, optimizer)
         for i, batch in enumerate(iter(dataLoader)):
             optimizer.zero_grad()
             input, target = batch
