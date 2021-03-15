@@ -15,7 +15,6 @@ min_note = 1
 max_note = 88
 
 def preprocess_wav(wavfile):
-    print("wav2inputnp")
     bins_per_octave = 36
     n_bins = bins_per_octave * 7
 
@@ -24,7 +23,6 @@ def preprocess_wav(wavfile):
                       bins_per_octave=bins_per_octave, n_bins=n_bins).T)
     min_S = np.min(S)
 
-    print(np.min(S),np.max(S),np.mean(S))
     S = np.pad(S, ((window_size//2,window_size//2),(0,0)), 'constant', constant_values=min_S)
 
     inputs = []
@@ -93,10 +91,14 @@ def preprocess(args):
             inputs = np.concatenate(inputs)
             outputs = np.concatenate(outputs)
 
+            mean = inputs.mean()
+            std = inputs.std()
+            inputs = (inputs - mean) / std
+
             sub_folder = properMkDir(output_dir,data_dir.split('/')[-2])
             folder = properMkDir(sub_folder,data_dir.split('/')[-1])
 
-            mmi = np.memmap(filename=os.path.join(folder,'input.dat'), mode='w+',shape=inputs.shape)
+            mmi = np.memmap(filename=os.path.join(folder,'input.dat'), dtype="float32", mode='w+',shape=inputs.shape)
             mmi[:] = inputs[:]
             mmo = np.memmap(filename=os.path.join(folder,'output.dat'), mode='w+',shape=outputs.shape)
             mmo[:] = outputs[:]
@@ -115,4 +117,4 @@ if __name__ == '__main__':
     # x = preprocess_wav('MAPS/ENSTDkCl/MUS/MAPS_MUS-alb_se2_ENSTDkCl.wav')
     # times = librosa.frames_to_time(np.arange(x.shape[0]),sr=rate,hop_length=hop_size)
     # mid = preprocess_midi('MAPS/ENSTDkCl/MUS/MAPS_MUS-alb_se2_ENSTDkCl.mid', times=times)
-    # preprocess(args)
+    preprocess(args)

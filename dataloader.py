@@ -15,7 +15,7 @@ def load_preprocess(folder):
     ipath = os.path.join(folder,'input.dat')
     note_range = max_note - min_note + 1
     n_bins = 7 * 36
-    mmi = np.memmap(ipath, mode='r')
+    mmi = np.memmap(ipath, dtype="float32", mode='r')
     i = np.reshape(mmi,(-1,window_size,n_bins))
     opath = os.path.join(folder,'output.dat')
     mmo = np.memmap(opath, mode='r')
